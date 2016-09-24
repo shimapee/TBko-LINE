@@ -26,6 +26,8 @@ const LINE_CONTENT_TYPE_RICH_MESSAGE = 12;
 const DOCOMO_ENDPOINT = "https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue";
 const DOCOMO_QUERY_PARAM = "APIKEY";
 const DOCOMO_APIKEY = "<MyAPIKey>";
+const DOCOMO_DIALOGUE_CHARACTOR_JK = 20;
+const DOCOMO_DIALOGUE_CHARACTOR_BABY = 30;
 
 /* Common Constant */
 const JSON_CONTENT_TYPE = 'application/json';
@@ -36,11 +38,11 @@ function sendBot (mid, text) {
 
   var dataSendLine = {
     'to': [mid],
-    'toChannel': '1383378250',
-    'eventType': '138311608800106203',
+    'toChannel': LINE_TO_CHANNEL,
+    'eventType': LINE_EVENT_TYPE,
     'content': {
-      'contentType': 1,
-      'toType': 1,
+      'contentType': LINE_CONTENT_TYPE_TEXT,
+      'toType': LINE_CONTENT_TO_TYPE,
       'text': text
     }
   };
@@ -75,7 +77,7 @@ function getDocomoAPI(mid, text) {
     method: 'post',
     headers: {'Content-Type': JSON_CONTENT_TYPE},
     json: true,
-    body: {'utt': text, 't': 20}
+    body: {'utt': text, 't': DOCOMO_DIALOGUE_CHARACTOR_JK}
   };
   var getData = function(error, response, data) {
     console.log('DOCOMO_RECIVE:' + data.utt);
