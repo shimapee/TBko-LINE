@@ -2,8 +2,8 @@
  * TBK LINE BOT
  */
 
- /* Node Module */
- var request = require('request');
+/* Node Module */
+var request = require('request');
 
 /* LINE BOT API Constant */
 const LINE_ENDPOINT = 'https://trialbot-api.line.me/v1/events';
@@ -34,7 +34,7 @@ const JSON_CONTENT_TYPE = 'application/json';
 
 
 /* LINE BOT SEND */
-function sendBot (mid, text) {
+function sendLine (mid, text) {
 
   var dataSendLine = {
     'to': [mid],
@@ -71,18 +71,22 @@ function sendBot (mid, text) {
 };
 
 /* Docomo API call */
-function getDocomoAPI(mid, text) {
+function fetchDocomoAPI(mid, text) {
+  var dataDocomoRequest = {
+    'utt': text,
+    't': DOCOMO_DIALOGUE_CHARACTOR_JK
+  };
+
   var optionsDocomo = {
     uri: DOCOMO_ENDPOINT+"?"+DOCOMO_QUERY_PARAM+"="+DOCOMO_APIKEY,
     method: 'post',
     headers: {'Content-Type': JSON_CONTENT_TYPE},
     json: true,
-    body: {'utt': text, 't': DOCOMO_DIALOGUE_CHARACTOR_JK}
+    body: dataDocomoRequest
   };
   var getData = function(error, response, data) {
     console.log('DOCOMO_RECIVE:' + data.utt);
-    //return data.utt
-    sendBot(mid, data.utt);
+    sendLine(mid, data.utt);
   };
   request(optionsDocomo, getData);
 };
@@ -93,8 +97,6 @@ exports.handler = function(event, context) {
     for(var i in result) {
       var mid = result[i].content.from;
       console.log('LINE_RECIVE:' + result[i].content.text);
-      getDocomoAPI(mid, result[i].content.text);
-      //console.log('DOCOMO_RECIVE:' + text);
-      //sendBot(mid, text);
+      fetchDocomoAPI(mid, result[i].content.text);
     }
 };
