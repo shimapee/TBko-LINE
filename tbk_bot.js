@@ -5,8 +5,9 @@
 /* Node Module */
 var request = require('request');
 
-/* LINE BOT API Constant */
-const LINE_ENDPOINT = 'https://trialbot-api.line.me/v1/events';
+/* LINE Massaging API Constant */
+//const LINE_ENDPOINT = 'https://api.line.me/v2/bot/message/reply';
+const LINE_ENDPOINT = 'https://api.line.me/v2/bot/message/reply';
 const LINE_CHANNEL_ID = '<myChannelID>';
 const LINE_CHANNEL_SECRET = '<myChannelSecret>';
 const LINE_MID = '<myMID>';
@@ -37,21 +38,27 @@ const JSON_CONTENT_TYPE = 'application/json';
 function sendLine (mid, text) {
 
   var dataSendLine = {
-    'to': [mid],
-    'toChannel': LINE_TO_CHANNEL,
+    /*'to': [mid],*/
+    'replyToken': mid,
+    /*'toChannel': LINE_TO_CHANNEL,
     'eventType': LINE_EVENT_TYPE,
     'content': {
       'contentType': LINE_CONTENT_TYPE_TEXT,
       'toType': LINE_CONTENT_TO_TYPE,
+      'text': text
+    }*/
+    'messages': {
+      'type': 'text',
       'text': text
     }
   };
 
   var headerLine = {
     'Content-Type': JSON_CONTENT_TYPE,
-    'X-Line-ChannelID': LINE_CHANNEL_ID,
+    /*'X-Line-ChannelID': LINE_CHANNEL_ID,
     'X-Line-ChannelSecret': LINE_CHANNEL_SECRET,
-    'X-Line-Trusted-User-With-ACL': LINE_MID
+    'X-Line-Trusted-User-With-ACL': LINE_MID*/
+    Authorization: Bearer {ENTER_ACCESS_TOKEN}
   };
 
   var optionsLine = {
@@ -93,10 +100,14 @@ function fetchDocomoAPI(mid, text) {
 
 /* Lambda */
 exports.handler = function(event, context) {
-    var result = event.result;
-    for(var i in result) {
-      var mid = result[i].content.from;
-      console.log('LINE_RECIVE:' + result[i].content.text);
-      fetchDocomoAPI(mid, result[i].content.text);
+    //var result = event.result;
+    var events = event.events;
+    for(var i in events) {
+      // 送信元ユーザID
+      userId = events[i].replyToken;
+      //console.log('LINE_RECIVE:' + result[i].content.text);
+      console.log('LINE_RECIVE:' +userId+":"+ events[i].message.text);
+      //fetchDocomoAPI(mid, result[i].content.text);
+      fetchDocomoAPI(userId, events[i].message.text);
     }
 };
